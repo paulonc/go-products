@@ -17,6 +17,12 @@ func (server *Server) createProduct(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	if req.Price <= 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "The price must be greater than zero."})
+		return
 	}
 
 	arg := db.CreateProductParams{
@@ -27,6 +33,7 @@ func (server *Server) createProduct(ctx *gin.Context) {
 	product, err := server.store.CreateProduct(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	ctx.JSON(http.StatusCreated, product)
@@ -41,11 +48,13 @@ func (server *Server) getProduct(ctx *gin.Context) {
 	err := ctx.ShouldBindUri(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
 	}
 
 	product, err := server.store.GetProduct(ctx, req.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, product)
@@ -60,11 +69,13 @@ func (server *Server) deleteProduct(ctx *gin.Context) {
 	err := ctx.ShouldBindUri(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
 	}
 
 	err = server.store.DeleteProduct(ctx, req.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, true)
@@ -81,6 +92,7 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
 	}
 
 	arg := db.UpdateProductParams{
@@ -92,6 +104,7 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 	product, err := server.store.UpdateProduct(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, product)
@@ -101,6 +114,7 @@ func (server *Server) getProducts(ctx *gin.Context) {
 	products, err := server.store.GetProducts(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
 	}
 
 	ctx.JSON(http.StatusOK, products)
