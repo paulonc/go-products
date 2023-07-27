@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/paulonc/go-products/backend/db/sqlc"
@@ -82,21 +83,23 @@ func (server *Server) deleteProduct(ctx *gin.Context) {
 }
 
 type updateProductRequest struct {
-	ID    int32  `json:"id" binding:"required"`
 	Name  string `json:"name"`
 	Price int32  `json:"price"`
 }
 
 func (server *Server) updateProduct(ctx *gin.Context) {
-	var req updateProductRequest
-	err := ctx.ShouldBindJSON(&req)
+	productID, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-
+	var req updateProductRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
 	arg := db.UpdateProductParams{
-		ID:    req.ID,
+		ID:    int32(productID),
 		Name:  req.Name,
 		Price: req.Price,
 	}
@@ -106,9 +109,9 @@ func (server *Server) updateProduct(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-
 	ctx.JSON(http.StatusOK, product)
 }
+
 
 func (server *Server) getProducts(ctx *gin.Context) {
 	products, err := server.store.GetProducts(ctx)
