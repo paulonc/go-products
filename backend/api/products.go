@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	db "github.com/paulonc/go-products/db/sqlc"
+	db "github.com/paulonc/go-products/backend/db/sqlc"
 )
 
 type createProductRequest struct {

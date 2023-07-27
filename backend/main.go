@@ -5,8 +5,8 @@ import (
 	"log"
 
 	_ "github.com/lib/pq"
-	"github.com/paulonc/go-products/api"
-	db "github.com/paulonc/go-products/db/sqlc"
+	"github.com/paulonc/go-products/backend/api"
+	db "github.com/paulonc/go-products/backend/db/sqlc"
 )
 
 const (

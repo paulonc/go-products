@@ -1,8 +1,9 @@
 package api
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	db "github.com/paulonc/go-products/db/sqlc"
+	db "github.com/paulonc/go-products/backend/db/sqlc"
 )
 
 type Server struct {
@@ -14,10 +15,16 @@ func InstanceServer(store *db.ExecuteStore) *Server {
 	server := &Server{store: store}
 	router := gin.Default()
 
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"}
+	router.Use(cors.New(config))
+
+
 	router.POST("/product", server.createProduct)
 	router.GET("/product/:id", server.getProduct)
 	router.GET("/products", server.getProducts)
-	router.PUT("/product", server.updateProduct)
+	router.PUT("/product/:id", server.updateProduct)
 	router.DELETE("/product/:id", server.deleteProduct)
 
 	server.router = router
